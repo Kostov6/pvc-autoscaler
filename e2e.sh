@@ -2,6 +2,9 @@
 
 set -e
 
+# Create fake metrics
+kubectl apply -f fake-metrics/minimal-fake-metrics.yaml
+
 # Patch the running pvc-autoscaler deployment to use fake metrics
 echo "Patching pvc-autoscaler deployment to use fake metrics..."
 kubectl patch deployment pvc-autoscaler-controller-manager -n pvc-autoscaler-system --type='json' -p='[
@@ -28,10 +31,8 @@ kubectl patch deployment pvc-autoscaler-controller-manager -n pvc-autoscaler-sys
 ]'
 
 # Wait for deployment to rollout
-kubectl rollout status deployment/controller-manager -n pvc-autoscaler-system --timeout=60s 
+kubectl rollout status deployment/pvc-autoscaler-controller-manager -n pvc-autoscaler-system --timeout=60s 
 
-# Create fake metrics
-kubectl apply -f fake-metrics/minimal-fake-metrics.yaml
 
 # Wait for PVC autoscaler to process and resize the PVC
 echo "Waiting for PVC autoscaler to resize vali-vali-0 PVC..."
